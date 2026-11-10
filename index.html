@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ELiVET 3D — Employability Virtual Trainer</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- 3D Canvas Mounting Area -->
+  <div id="canvas-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- HTML5 / CSS3 UI Overlay Layer -->
+  <!-- HTML5 / CSS3 UI Overlay Layer -->
+  <div id="ui-overlay">
+    <!-- Unified Top Executive HUD System (Zero-Overlap Flow) -->
+    <header class="top-hud interactive">
+      <!-- Tier 1: Main Control & Telemetry Bar -->
+      <div class="top-nav-bar">
+        <div class="nav-left">
+          <div class="brand-badge">
+            <div class="brand-icon-wrap">
+              <span class="brand-symbol">E</span>
+            </div>
+            <div>
+              <div class="brand-title">
+                ELIVET
+                <span class="brand-live-pill">
+                  <span class="brand-live-dot"></span> 3D
+                </span>
+              </div>
+              <div class="brand-subtitle">Employability Simulator</div>
+            </div>
+          </div>
+
+          <div class="stats-group">
+            <div class="hud-pill score-hud-pill">
+              <span class="pill-label">Score</span>
+              <span class="score-val" id="hud-score">0</span>
+            </div>
+            <div class="hud-pill streak-pill" id="hud-streak">
+              <span class="pill-label">Streak</span>
+              <span class="score-val" id="hud-streak-val">0</span>
+            </div>
+            <div class="hud-pill attire-hud-pill" id="hud-attire-pill" title="Live Dress Code Placement Readiness">
+              <span class="pill-label">Attire</span>
+              <span class="score-val" id="hud-attire-val">98% Ready</span>
+            </div>
+            <div class="perf-chip" id="perf-display">60 FPS</div>
+          </div>
+        </div>
+
+        <!-- Center: Quick Map Travel Segmented Switcher -->
+        <div class="nav-center">
+          <div class="map-travel-group" role="tablist" aria-label="Environment Quick Travel">
+            <button class="map-travel-btn active" data-scene="interview_room" title="Travel to Executive Boardroom">
+              <span class="map-travel-name">Boardroom</span>
+            </button>
+            <button class="map-travel-btn" data-scene="office_floor" title="Travel to Corporate Open Floor">
+              <span class="map-travel-name">Open Office</span>
+            </button>
+            <button class="map-travel-btn" data-scene="wardrobe" title="Travel to Candidate Styling Studio">
+              <span class="map-travel-name">Wardrobe</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Action & Utility Controls Cluster -->
+        <div class="nav-right controls-cluster">
+          <select id="lighting-select" class="glass-select" aria-label="Select Lighting Atmosphere">
+            <option value="daylight">Daylight</option>
+            <option value="warm_evening">Executive Sunset</option>
+            <option value="focus_studio">Focus Studio</option>
+          </select>
+
+          <select id="scene-select" class="glass-select hidden-select" aria-label="Select 3D Environment">
+            <option value="interview_room">Boardroom</option>
+            <option value="office_floor">Office Floor</option>
+            <option value="wardrobe">Wardrobe Studio</option>
+          </select>
+
+          <!-- Room Lighting Dropdown Trigger -->
+          <button id="lighting-toggle-btn" class="glass-btn" title="Toggle Room Lighting Controls Menu (Press L)">
+            <span class="btn-text-label">Lights ▾</span>
+          </button>
+
+          <button id="cam-toggle-btn" class="glass-btn" title="Toggle 1st/3rd Person View (Press C)">
+            <span id="cam-mode-text">Cinematic</span>
+          </button>
+
+          <button id="wardrobe-toggle-btn" class="glass-btn primary-studio-btn" title="Open Candidate Character &amp; Style Studio (Press T)">
+            <span class="btn-text-label">Style Studio</span>
+          </button>
+
+          <button id="help-toggle-btn" class="glass-btn help-btn" title="Placement Guide &amp; Controls (Press H)">
+            <span class="btn-text-label">Guide</span>
+          </button>
+
+          <button id="audio-toggle-btn" class="glass-btn" title="Toggle Sound FX">
+            <span class="btn-text-label">Audio</span>
+          </button>
+
+          <a href="http://localhost:3000/modules" class="glass-btn exit-btn" title="Exit to 2D Dashboard">
+            Exit
+          </a>
+        </div>
+      </div>
+
+      <!-- Tier 2: Dynamic Map Ambient Status & Objective Header -->
+      <div id="map-ambient-header" class="ambient-sub-bar">
+        <div class="ambient-left">
+          <div class="ambient-map-badge" id="ambient-map-badge">
+            <span class="ambient-map-icon" id="ambient-map-icon">LOC</span>
+            <div class="ambient-map-text">
+              <div class="ambient-map-title" id="ambient-map-title">EXECUTIVE BOARDROOM</div>
+              <div class="ambient-map-subtitle" id="ambient-map-subtitle">Technical &amp; HR Mock Round 1</div>
+            </div>
+          </div>
+          <div class="ambient-round-pill" id="ambient-round-pill">
+            <span class="pulse-indicator-dot"></span>
+            <span id="ambient-round-text">ROUND 1 / 3 • ARCHITECTURE</span>
+          </div>
+        </div>
+
+        <div class="ambient-center-objective" id="ambient-center-objective">
+          <span class="objective-label">OBJECTIVE:</span>
+          <span class="objective-text" id="ambient-objective-text">Demonstrate technical problem ownership and structured STAR methodology.</span>
+        </div>
+
+        <div class="ambient-right">
+          <!-- Live Telemetry: Heart Rate / Rapport / Dress Code -->
+          <div class="telemetry-chip" id="ambient-telemetry-chip" title="Live Candidate Composure Telemetry">
+            <div>
+              <div class="telemetry-val" id="ambient-telemetry-val">72 BPM</div>
+              <div class="telemetry-lbl" id="ambient-telemetry-lbl">Composure: Calm</div>
+            </div>
+          </div>
+
+          <!-- NPC Persona Chip -->
+          <div class="npc-persona-chip" id="npc-persona-chip" title="Interlocutor Profile">
+            <span class="npc-persona-avatar" id="npc-persona-avatar">VM</span>
+            <div>
+              <div class="npc-persona-name" id="npc-persona-name">Mr. Vikram Malhotra</div>
+              <div class="npc-persona-role" id="npc-persona-role">Senior Tech Director</div>
+            </div>
+            <span class="npc-sentiment-dot" id="npc-sentiment-dot" title="Live Interlocutor Sentiment: Neutral / Evaluating"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anchored Room Lighting Popover Dropdown (Leaves Center Screen Open!) -->
+      <div class="lighting-popover-menu hidden interactive" id="lighting-switches" role="dialog" aria-label="Room Lighting Controls">
+        <div class="lighting-popover-header">
+          <div class="lighting-popover-title">
+            <span class="pulse-sparkle">💡</span>
+            <span>ROOM LIGHTING CONTROLS</span>
+          </div>
+          <button class="lighting-popover-close-btn" id="lighting-close-btn" title="Close Lighting Menu (Esc)">✕</button>
+        </div>
+
+        <div class="lighting-popover-grid">
+          <button id="btn-toggle-ceiling" class="light-switch-btn active" title="Toggle Ceiling Lights (Press L)">
+            <div class="switch-btn-status">
+              <span class="switch-led"></span>
+              <span class="switch-pill on" id="pill-ceiling">ON</span>
+            </div>
+            <div class="switch-btn-main">
+              <span class="switch-icon">💡</span>
+              <div class="switch-meta">
+                <span class="switch-name">Ceiling Lights</span>
+                <span class="switch-hotkey">Hotkey [L]</span>
+              </div>
+            </div>
+          </button>
+
+          <button id="btn-toggle-desklamp" class="light-switch-btn active" title="Toggle Desk Task Lamp (Press J)">
+            <div class="switch-btn-status">
+              <span class="switch-led"></span>
+              <span class="switch-pill on" id="pill-desklamp">ON</span>
+            </div>
+            <div class="switch-btn-main">
+              <span class="switch-icon">🏮</span>
+              <div class="switch-meta">
+                <span class="switch-name">Desk Lamp</span>
+                <span class="switch-hotkey">Hotkey [J]</span>
+              </div>
+            </div>
+          </button>
+
+          <button id="btn-toggle-sunlight" class="light-switch-btn active" title="Toggle Window Daylight (Press K)">
+            <div class="switch-btn-status">
+              <span class="switch-led"></span>
+              <span class="switch-pill on" id="pill-sunlight">ON</span>
+            </div>
+            <div class="switch-btn-main">
+              <span class="switch-icon">☀️</span>
+              <div class="switch-meta">
+                <span class="switch-name">Sunlight</span>
+                <span class="switch-hotkey">Hotkey [K]</span>
+              </div>
+            </div>
+          </button>
+
+          <button id="btn-toggle-nightmode" class="light-switch-btn" title="Toggle Late-Night Mode (Press N)">
+            <div class="switch-btn-status">
+              <span class="switch-led night"></span>
+              <span class="switch-pill off" id="pill-nightmode">OFF</span>
+            </div>
+            <div class="switch-btn-main">
+              <span class="switch-icon">🌙</span>
+              <div class="switch-meta">
+                <span class="switch-name">Night Mode</span>
+                <span class="switch-hotkey">Hotkey [N]</span>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div class="lighting-popover-footer">
+          <span class="popover-tip">Click 3D wall switches or press hotkeys [L, J, K, N] anytime</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Office Radar & Tactical Mini-Map (Active on office_floor) -->
+    <div id="office-minimap-hud" class="interactive hidden">
+      <div class="minimap-header">
+        <div class="minimap-title-wrap">
+          <span class="minimap-blip-dot"></span>
+          <span class="minimap-title">FLOOR RADAR</span>
+        </div>
+        <span class="minimap-range-label">15M RANGE</span>
+      </div>
+      <div class="minimap-canvas-wrap">
+        <canvas id="minimap-canvas" width="140" height="140"></canvas>
+        <div class="minimap-cardinal n">N</div>
+        <div class="minimap-cardinal s">S</div>
+        <div class="minimap-cardinal e">E</div>
+        <div class="minimap-cardinal w">W</div>
+      </div>
+      <div class="minimap-footer">
+        <div class="minimap-target-info">
+          <span class="target-icon">🎯</span>
+          <span class="target-text" id="minimap-target-text">Aditi Sharma: 5.0m</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D Raycasting Interactive Object Hover Tooltip -->
+    <div id="click-hover-tooltip" class="click-tooltip" role="tooltip" aria-hidden="true">
+      <div class="tooltip-icon">👆</div>
+      <div class="tooltip-content">
+        <div class="tooltip-title" id="tooltip-title">Wall Light Switch</div>
+        <div class="tooltip-hint" id="tooltip-hint">Click to toggle lights in 3D</div>
+      </div>
+    </div>
+
+    <!-- Floating NPC Speech Bubble (Anchored in 3D Space) -->
+    <div id="npc-speech-bubble" role="dialog" aria-live="polite">
+      <div class="npc-meta-header">
+        <div class="npc-speaker-name" id="npc-speaker-name">Lead Interviewer</div>
+      </div>
+      <p class="npc-dialogue-text" id="npc-speech-text">Good morning. Please take your seat.</p>
+    </div>
+
+    <!-- Candidate Character & Wardrobe Studio Drawer -->
+    <aside id="wardrobe-panel" class="interactive" aria-label="Candidate Character Studio">
+      <!-- Studio Header -->
+      <div class="studio-header">
+        <div class="studio-title-wrap">
+          <div>
+            <div class="studio-title">CANDIDATE STUDIO</div>
+            <div class="studio-subtitle">Professional Styling &amp; Grooming</div>
+          </div>
+        </div>
+        <div class="studio-header-actions">
+          <span class="readiness-chip optimal" id="avatar-readiness-chip">98% READY</span>
+          <button class="studio-action-icon-btn" id="btn-save-outfit" title="Save this Outfit to Local Dossier">Save</button>
+          <button class="studio-action-icon-btn" id="btn-open-dossier" title="View Official Attire Certificate Dossier">Audit</button>
+          <button class="customizer-close-btn" id="wardrobe-close-btn" title="Close Studio (Esc or T)">✕</button>
+        </div>
+      </div>
+
+      <!-- Candidate Profile & Silhouette Selector -->
+      <div class="persona-identity-bar">
+        <div class="persona-meta">
+          <span class="persona-name">Arsha Gandhi</span>
+          <span class="persona-role">Candidate Profile</span>
+        </div>
+        <div class="gender-toggle-group">
+          <button class="gender-btn active" data-gender="male" id="gender-male-btn" title="Male Candidate Build">Male Build</button>
+          <button class="gender-btn" data-gender="female" id="gender-female-btn" title="Female Executive Build">Female Build</button>
+        </div>
+      </div>
+
+      <!-- Camera Framing Quick Inspector Bar -->
+      <div class="camera-framing-bar">
+        <span class="framing-label">ZOOM:</span>
+        <div class="framing-btn-group">
+          <button class="framing-btn active" data-focus="full" id="cam-focus-full" title="Full Body View">Full</button>
+          <button class="framing-btn" data-focus="torso" id="cam-focus-torso" title="Torso &amp; Suit View">Suit</button>
+          <button class="framing-btn" data-focus="face" id="cam-focus-face" title="Face &amp; Hair View">Face</button>
+          <button class="framing-btn" data-focus="shoes" id="cam-focus-shoes" title="Shoes &amp; Leather View">Shoes</button>
+        </div>
+      </div>
+
+      <!-- Studio Lighting & Atmosphere Quick-Tuner Bar -->
+      <div class="studio-lighting-tuner">
+        <span class="tuner-label">LIGHT:</span>
+        <div class="tuner-btn-group">
+          <button class="tuner-btn active" data-light="daylight" title="High-Key Crisp Daylight Atmosphere">Daylight</button>
+          <button class="tuner-btn" data-light="warm_evening" title="Executive Warm Sunset Atmosphere">Sunset</button>
+          <button class="tuner-btn" data-light="focus_studio" title="High-Key Focus Studio Atmosphere">Studio</button>
+        </div>
+      </div>
+
+      <!-- Live Wardrobe Consultant Insight Banner -->
+      <div class="consultant-insight-card">
+        <div class="consultant-insight-header">
+          <span class="consultant-name">CONSULTANT PRIYA SEN</span>
+        </div>
+        <p class="consultant-insight-text" id="consultant-tip-text">
+          Executive Navy with crisp white shirt and burgundy power tie is the universal standard for campus and corporate interviews.
+        </p>
+      </div>
+
+      <!-- Category Navigation Tabs -->
+      <nav class="studio-nav-tabs" role="tablist">
+        <button class="studio-tab-btn active" data-tab="tab-outfit" role="tab" aria-selected="true">
+          Outfits
+        </button>
+        <button class="studio-tab-btn" data-tab="tab-face" role="tab" aria-selected="false">
+          Grooming
+        </button>
+        <button class="studio-tab-btn" data-tab="tab-accessories" role="tab" aria-selected="false">
+          Accents
+        </button>
+        <button class="studio-tab-btn" data-tab="tab-presets" role="tab" aria-selected="false">
+          Presets
+        </button>
+      </nav>
+
+      <!-- Scrollable Tab Content Container -->
+      <div class="studio-tab-content-wrap">
+        <!-- TAB 1: OUTFITS & SUITS -->
+        <div class="studio-tab-pane active" id="tab-outfit" role="tabpanel">
+          <div class="customizer-group">
+            <label class="customizer-label">Attire Category</label>
+            <div class="attire-card-grid">
+              <button class="attire-card-btn active" data-style="formal">
+                <span class="card-name">Business Formal</span>
+                <span class="card-tag">Two-Piece Suit</span>
+              </button>
+              <button class="attire-card-btn" data-style="smart_casual">
+                <span class="card-name">Smart Casual</span>
+                <span class="card-tag">Polo &amp; Chinos</span>
+              </button>
+              <button class="attire-card-btn" data-style="casual">
+                <span class="card-name">Tech Minimal</span>
+                <span class="card-tag">Charcoal Clean Knit</span>
+              </button>
+            </div>
+                <span class="card-icon">👕</span>
+                <span class="card-name">Smart Casual</span>
+                <span class="card-tag">Polo &amp; Chinos</span>
+              </button>
+              <button class="attire-card-btn" data-style="casual">
+                <span class="card-icon">🧢</span>
+                <span class="card-name">Tech Interview</span>
+                <span class="card-tag">Charcoal Minimal</span>
+              </button>
+            </div>
+            <!-- Hidden select for backward compatibility -->
+            <select id="attire-style-select" style="display: none;">
+              <option value="formal">formal</option>
+              <option value="smart_casual">smart_casual</option>
+              <option value="casual">casual</option>
+            </select>
+          </div>
+
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Suit Jacket / Blazer Color</label>
+              <span class="selected-val-chip" id="jacket-val-chip">Executive Navy</span>
+            </div>
+            <div class="swatch-grid" id="jacket-swatches">
+              <button class="swatch-btn active" style="background-color: #172b46;" data-color="#172b46" data-name="Executive Navy" title="Executive Navy"></button>
+              <button class="swatch-btn" style="background-color: #18181b;" data-color="#18181b" data-name="Obsidian Black" title="Obsidian Black"></button>
+              <button class="swatch-btn" style="background-color: #334155;" data-color="#334155" data-name="Slate Charcoal" title="Slate Charcoal"></button>
+              <button class="swatch-btn" style="background-color: #4a1525;" data-color="#4a1525" data-name="Deep Burgundy" title="Deep Burgundy"></button>
+              <button class="swatch-btn" style="background-color: #1e3a8a;" data-color="#1e3a8a" data-name="Royal Sapphire" title="Royal Sapphire"></button>
+              <button class="swatch-btn" style="background-color: #854d0e;" data-color="#854d0e" data-name="Desert Camel" title="Desert Camel"></button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Dress Shirt Color</label>
+              <span class="selected-val-chip" id="shirt-val-chip">Crisp White</span>
+            </div>
+            <div class="swatch-grid" id="shirt-swatches">
+              <button class="swatch-btn active" style="background-color: #ffffff;" data-color="#ffffff" data-name="Crisp White" title="Crisp Pure White"></button>
+              <button class="swatch-btn" style="background-color: #e0f2fe;" data-color="#e0f2fe" data-name="Sky Ice Blue" title="French Ice Blue"></button>
+              <button class="swatch-btn" style="background-color: #f3e8ff;" data-color="#f3e8ff" data-name="French Lilac" title="French Lilac"></button>
+              <button class="swatch-btn" style="background-color: #fef3c7;" data-color="#fef3c7" data-name="Soft Champagne" title="Soft Champagne"></button>
+              <button class="swatch-btn" style="background-color: #1f2937;" data-color="#1f2937" data-name="Stealth Charcoal" title="Stealth Charcoal"></button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Silk Tie &amp; Accent</label>
+              <button class="pill-toggle-btn active" id="tie-toggle-btn">
+                <span class="toggle-indicator"></span> Tie ON
+              </button>
+            </div>
+            <div class="swatch-grid" id="tie-swatches">
+              <button class="swatch-btn active" style="background-color: #1e3a5f;" data-color="#1e3a5f" data-name="Midnight Navy" title="Midnight Navy"></button>
+              <button class="swatch-btn" style="background-color: #991b1b;" data-color="#991b1b" data-name="Crimson Power" title="Crimson Power Tie"></button>
+              <button class="swatch-btn" style="background-color: #065f46;" data-color="#065f46" data-name="Emerald Satin" title="Emerald Satin"></button>
+              <button class="swatch-btn" style="background-color: #d97706;" data-color="#d97706" data-name="Amber Gold" title="Amber Gold"></button>
+              <button class="swatch-btn" style="background-color: #64748b;" data-color="#64748b" data-name="Silver Steel" title="Silver Slate"></button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Trousers / Chinos</label>
+              <span class="selected-val-chip" id="pants-val-chip">Navy Slate</span>
+            </div>
+            <div class="swatch-grid" id="pants-swatches">
+              <button class="swatch-btn active" style="background-color: #1e293b;" data-color="#1e293b" data-name="Navy Slate" title="Navy Slate Trousers"></button>
+              <button class="swatch-btn" style="background-color: #0f172a;" data-color="#0f172a" data-name="Jet Black" title="Jet Black"></button>
+              <button class="swatch-btn" style="background-color: #334155;" data-color="#334155" data-name="Charcoal" title="Dark Charcoal"></button>
+              <button class="swatch-btn" style="background-color: #d4a373;" data-color="#d4a373" data-name="Khaki Chino" title="Tailored Khaki"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: FACE & GROOMING -->
+        <div class="studio-tab-pane" id="tab-face" role="tabpanel">
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Candidate Skin Tone</label>
+              <span class="selected-val-chip" id="skin-val-chip">Golden Bronze</span>
+            </div>
+            <div class="swatch-grid palette-swatches">
+              <button class="swatch-btn" style="background-color: #fce2c8;" data-skin="#fce2c8" data-name="Porcelain Fair" aria-label="Porcelain Fair" title="Porcelain Fair"></button>
+              <button class="swatch-btn" style="background-color: #f1c27d;" data-skin="#f1c27d" data-name="Fair Honey" aria-label="Fair Honey" title="Fair Honey"></button>
+              <button class="swatch-btn" style="background-color: #e0ac69;" data-skin="#e0ac69" data-name="Warm Caramel" aria-label="Warm Caramel" title="Warm Caramel"></button>
+              <button class="swatch-btn active" style="background-color: #c68642;" data-skin="#c68642" data-name="Golden Bronze" aria-label="Golden Bronze" title="Golden Bronze"></button>
+              <button class="swatch-btn" style="background-color: #8d5524;" data-skin="#8d5524" data-name="Chestnut Bronze" aria-label="Chestnut Bronze" title="Chestnut Bronze"></button>
+              <button class="swatch-btn" style="background-color: #5c3818;" data-skin="#5c3818" data-name="Deep Espresso" aria-label="Deep Espresso" title="Deep Espresso"></button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <label class="customizer-label">Hairstyle &amp; Grooming</label>
+            <div class="hair-style-grid">
+              <button class="pill-option-btn active" data-hairstyle="executive">
+                <span>✂️</span> Side Part / Exec
+              </button>
+              <button class="pill-option-btn" data-hairstyle="taper">
+                <span>✂️</span> Clean Taper
+              </button>
+              <button class="pill-option-btn" data-hairstyle="bob">
+                <span>💇</span> Corporate Bob
+              </button>
+              <button class="pill-option-btn" data-hairstyle="bun">
+                <span>👱</span> Tied Chignon
+              </button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Hair Color</label>
+              <span class="selected-val-chip" id="haircolor-val-chip">Jet Black</span>
+            </div>
+            <div class="swatch-grid" id="hair-swatches">
+              <button class="swatch-btn active" style="background-color: #18181b;" data-color="#18181b" data-name="Jet Black" title="Jet Black"></button>
+              <button class="swatch-btn" style="background-color: #2d1d12;" data-color="#2d1d12" data-name="Dark Espresso" title="Dark Espresso"></button>
+              <button class="swatch-btn" style="background-color: #4a2d18;" data-color="#4a2d18" data-name="Chestnut Brown" title="Chestnut Brown"></button>
+              <button class="swatch-btn" style="background-color: #78350f;" data-color="#78350f" data-name="Auburn Bronze" title="Auburn Bronze"></button>
+              <button class="swatch-btn" style="background-color: #64748b;" data-color="#64748b" data-name="Silver Steel" title="Silver Slate"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: SHOES & ACCESSORIES -->
+        <div class="studio-tab-pane" id="tab-accessories" role="tabpanel">
+          <div class="customizer-group">
+            <div class="label-with-val">
+              <label class="customizer-label">Footwear &amp; Leather Finish</label>
+              <span class="selected-val-chip" id="shoes-val-chip">Black Oxford</span>
+            </div>
+            <div class="shoes-card-grid">
+              <button class="shoe-card-btn active" data-color="#09090b" data-name="Black Oxford">
+                <span class="shoe-icon">👞</span>
+                <div>
+                  <div class="shoe-title">Black Oxford</div>
+                  <div class="shoe-sub">Cap-toe Formal</div>
+                </div>
+              </button>
+              <button class="shoe-card-btn" data-color="#451a03" data-name="Walnut Derby">
+                <span class="shoe-icon">👞</span>
+                <div>
+                  <div class="shoe-title">Walnut Derby</div>
+                  <div class="shoe-sub">Burnished Brown</div>
+                </div>
+              </button>
+              <button class="shoe-card-btn" data-color="#3b1117" data-name="Burgundy Monk">
+                <span class="shoe-icon">👞</span>
+                <div>
+                  <div class="shoe-title">Burgundy Monk</div>
+                  <div class="shoe-sub">Executive Strap</div>
+                </div>
+              </button>
+              <button class="shoe-card-btn" data-color="#f8fafc" data-name="Clean White">
+                <span class="shoe-icon">👟</span>
+                <div>
+                  <div class="shoe-title">Clean White</div>
+                  <div class="shoe-sub">Minimal Leather</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <label class="customizer-label">Eyewear / Frames</label>
+            <div class="eyewear-grid">
+              <button class="pill-option-btn active" data-glasses="none">
+                <span>🚫</span> None
+              </button>
+              <button class="pill-option-btn" data-glasses="rectangular">
+                <span>👓</span> Rectangular
+              </button>
+              <button class="pill-option-btn" data-glasses="round">
+                <span>👓</span> Titanium Round
+              </button>
+              <button class="pill-option-btn" data-glasses="gold_rim">
+                <span>👓</span> Gold Wireframe
+              </button>
+            </div>
+          </div>
+
+          <div class="customizer-group">
+            <label class="customizer-label">Wristwatch</label>
+            <div class="watch-grid">
+              <button class="pill-option-btn" data-watch="none">
+                <span>🚫</span> None
+              </button>
+              <button class="pill-option-btn active" data-watch="steel">
+                <span>⌚</span> Stainless Steel
+              </button>
+              <button class="pill-option-btn" data-watch="gold">
+                <span>⌚</span> Executive Gold
+              </button>
+              <button class="pill-option-btn" data-watch="leather">
+                <span>⌚</span> Brown Leather
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: PRESETS & AUDIT -->
+        <div class="studio-tab-pane" id="tab-presets" role="tabpanel">
+          <div class="customizer-group">
+            <label class="customizer-label">1-Click Career Ensembles</label>
+            <div class="preset-list">
+              <button class="preset-card-btn" data-preset="investment_banking">
+                <div class="preset-top">
+                  <span class="preset-name">🏛️ Investment Banking &amp; BFSI</span>
+                  <span class="preset-score">100% Ready</span>
+                </div>
+                <div class="preset-desc">Navy two-piece suit, crisp white shirt, burgundy power tie, black cap-toe oxfords.</div>
+              </button>
+
+              <button class="preset-card-btn" data-preset="tech_mnc">
+                <div class="preset-top">
+                  <span class="preset-name">💻 Big Tech MNC Interview</span>
+                  <span class="preset-score">98% Ready</span>
+                </div>
+                <div class="preset-desc">Slate charcoal tailored blazer, French ice blue shirt, sapphire tie, titanium frames.</div>
+              </button>
+
+              <button class="preset-card-btn" data-preset="campus_day1">
+                <div class="preset-top">
+                  <span class="preset-name">🎓 Day-1 Campus Placement</span>
+                  <span class="preset-score">96% Ready</span>
+                </div>
+                <div class="preset-desc">Obsidian suit, high-contrast white shirt, corporate royal blue tie, polished shoes.</div>
+              </button>
+
+              <button class="preset-card-btn" data-preset="startup_smart">
+                <div class="preset-top">
+                  <span class="preset-name">🚀 Product Startup Round</span>
+                  <span class="preset-score">92% Ready</span>
+                </div>
+                <div class="preset-desc">Cerulean polo, tailored beige chinos, walnut derby shoes, leather watch.</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="attire-audit-box">
+            <div class="audit-header">
+              <span class="pulse-sparkle">🛡️</span>
+              <span>AI PLACEMENT ATTIRE AUDIT</span>
+            </div>
+            <ul class="audit-checklist" id="attire-audit-list">
+              <li class="audit-item pass">
+                <span class="audit-icon">✓</span>
+                <div>
+                  <strong>Contrast Ratio:</strong>
+                  <span>High-contrast dark jacket &amp; white shirt ensures maximum video/in-person presence.</span>
+                </div>
+              </li>
+              <li class="audit-item pass">
+                <span class="audit-icon">✓</span>
+                <div>
+                  <strong>Leather Harmony Rule:</strong>
+                  <span>Belt and footwear colors synchronized in formal black tone.</span>
+                </div>
+              </li>
+              <li class="audit-item pass">
+                <span class="audit-icon">✓</span>
+                <div>
+                  <strong>The Sleeve Ratio Rule:</strong>
+                  <span>1/4" shirt cuff exposed beyond blazer jacket sleeve edge.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Studio Footer / 3D Turntable Dock -->
+      <div class="studio-turntable-dock">
+        <button class="dock-rot-btn" id="turntable-left-btn" title="Rotate Avatar 45° Left">↺ Rotate Left</button>
+        <button class="dock-rot-btn reset-btn" id="turntable-reset-btn" title="Reset View to Front">Front View</button>
+        <button class="dock-rot-btn" id="turntable-right-btn" title="Rotate Avatar 45° Right">Rotate Right ↻</button>
+      </div>
+    </aside>
+
+    <!-- Mobile Virtual Controller -->
+    <div id="mobile-controls" class="interactive">
+      <div class="dpad">
+        <div></div>
+        <button class="dpad-btn" id="dpad-up">▲</button>
+        <div></div>
+        <button class="dpad-btn" id="dpad-left">◀</button>
+        <div></div>
+        <button class="dpad-btn" id="dpad-right">▶</button>
+        <div></div>
+        <button class="dpad-btn" id="dpad-down">▼</button>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- Bottom Scenario Interaction Card (Unified Executive Dialogue HUD) -->
+    <section class="scenario-container interactive" id="scenario-panel">
+      <div class="scenario-card">
+        <!-- Unified Single-Row Executive Dialogue Header -->
+        <div class="scenario-header-bar">
+          <div class="scenario-header-left">
+            <div class="scenario-speaker-meta">
+              <span class="scenario-speaker-name" id="scenario-speaker-name">Vikram Malhotra</span>
+              <span class="scenario-speaker-role" id="scenario-speaker-role">Senior Technical Director</span>
+            </div>
+            <div class="scenario-header-divider"></div>
+            <span class="scenario-tag" id="scenario-tag">Technical Communication</span>
+            <span class="scenario-step-indicator" id="scenario-step-indicator">Scenario 1</span>
+          </div>
+
+          <div class="scenario-header-right">
+            <span class="scenario-tone-badge" id="scenario-tone-badge">STAR Evaluation</span>
+            <span class="scenario-id-label" id="scenario-id-label">INT_001</span>
+            <button class="scenario-dock-btn" id="scenario-dock-btn" title="Toggle Compact Dialogue HUD">
+              <span id="dock-btn-text">⏷ Dock</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="situation-text" id="situation-text">
+          Loading scenario context...
+        </p>
+
+        <div class="choices-list" id="choices-list">
+          <button class="choice-btn" data-choice="A">
+            <div class="choice-content-wrap">
+              <span class="choice-key">A</span>
+              <span class="choice-label" id="choice-a-label">Option A</span>
+            </div>
+            <div class="choice-meta-wrap">
+              <span class="choice-category-badge" id="choice-a-badge" style="display: none;"></span>
+              <span class="choice-hint-key">[Key 1]</span>
+            </div>
+          </button>
+          <button class="choice-btn" data-choice="B">
+            <div class="choice-content-wrap">
+              <span class="choice-key">B</span>
+              <span class="choice-label" id="choice-b-label">Option B</span>
+            </div>
+            <div class="choice-meta-wrap">
+              <span class="choice-category-badge" id="choice-b-badge" style="display: none;"></span>
+              <span class="choice-hint-key">[Key 2]</span>
+            </div>
+          </button>
+          <button class="choice-btn" data-choice="C">
+            <div class="choice-content-wrap">
+              <span class="choice-key">C</span>
+              <span class="choice-label" id="choice-c-label">Option C</span>
+            </div>
+            <div class="choice-meta-wrap">
+              <span class="choice-category-badge" id="choice-c-badge" style="display: none;"></span>
+              <span class="choice-hint-key">[Key 3]</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Integrated Clean Hotkeys Footer (No Screen Collisions) -->
+        <div class="scenario-footer-hotkeys">
+          <div class="hotkey-item">
+            <span class="kbd-mini">W</span><span class="kbd-mini">A</span><span class="kbd-mini">S</span><span class="kbd-mini">D</span>
+            <span class="hotkey-text">Move</span>
+          </div>
+          <span class="hotkey-dot">•</span>
+          <div class="hotkey-item">
+            <span class="kbd-mini">C</span>
+            <span class="hotkey-text">Cam</span>
+          </div>
+          <span class="hotkey-dot">•</span>
+          <div class="hotkey-item">
+            <span class="kbd-mini">T</span>
+            <span class="hotkey-text">Studio</span>
+          </div>
+          <span class="hotkey-dot">•</span>
+          <div class="hotkey-item">
+            <span class="kbd-mini">1</span><span class="kbd-mini">2</span><span class="kbd-mini">3</span>
+            <span class="hotkey-text">Pick</span>
+          </div>
+          <span class="hotkey-dot">•</span>
+          <div class="hotkey-item">
+            <span class="kbd-mini">L</span>
+            <span class="hotkey-text">Lights</span>
+          </div>
+          <span class="hotkey-dot">•</span>
+          <div class="hotkey-item">
+            <span class="kbd-mini">H</span>
+            <span class="hotkey-text">Guide</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkpoint / Feedback Modal -->
+    <div id="checkpoint-modal" role="alertdialog" aria-modal="true">
+      <div class="modal-grade-ribbon" id="modal-grade-ribbon">GRADE A+ • OUTSTANDING</div>
+      <div class="modal-glow-header">
+        <div class="score-circle positive" id="modal-score-circle">+10</div>
+        <div class="score-sublabel" id="modal-score-sublabel">Employability Rating</div>
+      </div>
+      <h3 class="feedback-headline" id="modal-feedback-title">Great Answer!</h3>
+      <p class="feedback-body" id="modal-feedback-text">Demonstrates structured engineering methodology.</p>
+
+      <div class="modal-breakdown-row">
+        <div class="breakdown-stat-chip">
+          <span class="stat-chip-lbl">COMPETENCY GAIN</span>
+          <span class="stat-chip-val" id="modal-xp-val">+15 XP Corporate Voice</span>
+        </div>
+        <div class="breakdown-stat-chip">
+          <span class="stat-chip-lbl">STREAK MULTIPLIER</span>
+          <span class="stat-chip-val" id="modal-streak-val">🔥 1.5x Active</span>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <div>
+          <strong>Coach's Placement Tip:</strong>
+          <span id="modal-tip-text">Maintain STAR format.</span>
+        </div>
+      </div>
+      <button class="action-btn interactive" id="modal-next-btn">
+        <span>Continue Round [Space]</span>
+        <span>→</span>
+      </button>
+    </div>
+
+    <!-- Official Workplace Attire Certification Dossier Modal -->
+    <div id="attire-dossier-modal" class="dossier-modal-overlay" role="dialog" aria-modal="true">
+      <div class="dossier-modal-card">
+        <div class="dossier-modal-header">
+          <div class="dossier-badge-wrap">
+            <span class="dossier-gold-seal">🏆</span>
+            <div>
+              <div class="dossier-institution">ELiVET EMPLOYABILITY SYSTEM</div>
+              <h2 class="dossier-title">WORKPLACE ATTIRE CERTIFICATION</h2>
+            </div>
+          </div>
+          <button class="dossier-close-btn" id="dossier-close-btn" title="Close Dossier">✕</button>
+        </div>
+
+        <div class="dossier-student-strip">
+          <div>
+            <div class="dossier-student-name">Arsha Gandhi</div>
+            <div class="dossier-student-meta">PRN: ELV-2026-CSE-042 • Computer Science &amp; Engineering</div>
+          </div>
+          <div class="dossier-score-badge">
+            <span class="dossier-score-num" id="dossier-score-num">98%</span>
+            <span class="dossier-score-lbl">AUDIT RATING</span>
+          </div>
+        </div>
+
+        <div class="dossier-rubric-grid">
+          <div class="rubric-stat-card">
+            <span class="rubric-stat-icon">👔</span>
+            <div class="rubric-stat-val" id="dossier-suit-val">Executive Navy</div>
+            <div class="rubric-stat-lbl">Suit &amp; Lapel Spec</div>
+          </div>
+          <div class="rubric-stat-card">
+            <span class="rubric-stat-icon">👔</span>
+            <div class="rubric-stat-val" id="dossier-shirt-val">Crisp White</div>
+            <div class="rubric-stat-lbl">Dress Shirt Contrast</div>
+          </div>
+          <div class="rubric-stat-card">
+            <span class="rubric-stat-icon">🎗️</span>
+            <div class="rubric-stat-val" id="dossier-tie-val">Midnight Navy Silk</div>
+            <div class="rubric-stat-lbl">Collar &amp; Tie Ratio</div>
+          </div>
+          <div class="rubric-stat-card">
+            <span class="rubric-stat-icon">👞</span>
+            <div class="rubric-stat-val" id="dossier-leather-val">Black Oxford</div>
+            <div class="rubric-stat-lbl">Leather Belt &amp; Shoe Rule</div>
+          </div>
+        </div>
+
+        <div class="dossier-rules-list">
+          <div class="dossier-rule-item">
+            <span class="dossier-check">✓</span>
+            <div>
+              <strong>The 4 Golden Rules Compliance:</strong>
+              <span>Belt and shoe leather tone, 1/4" shirt cuff exposure, tie tip alignment, and video camera contrast passed with distinction.</span>
+            </div>
+          </div>
+          <div class="dossier-rule-item">
+            <span class="dossier-check">✓</span>
+            <div>
+              <strong>Placement Drive Recommendation:</strong>
+              <span>Qualified for Tier-1 Corporate Day-1 placement interviews, client presentations, and MNC panel rounds.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dossier-actions-footer">
+          <button class="dossier-btn-secondary" id="dossier-print-btn">🖨️ Print / Save PDF</button>
+          <button class="dossier-btn-primary" id="dossier-confirm-btn">✓ Save &amp; Confirm Setup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Controls & Campus Placement Guide Modal -->
+    <div id="help-modal" class="guide-modal-overlay" role="dialog" aria-modal="true">
+      <div class="guide-modal-card">
+        <div class="guide-modal-header">
+          <div class="guide-brand-wrap">
+            <span class="guide-icon">🎓</span>
+            <div>
+              <div class="guide-institution">ELiVET 3D VIRTUAL EMPLOYABILITY LAB</div>
+              <h2 class="guide-title">PLACEMENT PREPARATION &amp; SIMULATOR GUIDE</h2>
+            </div>
+          </div>
+          <button class="guide-close-btn" id="help-close-btn" title="Close Guide (Esc or H)">✕</button>
+        </div>
+
+        <div class="guide-modal-body">
+          <!-- 3 Virtual Maps Section -->
+          <div class="guide-section">
+            <h3 class="guide-section-title">🗺️ The 3 Immersive Placement Maps</h3>
+            <div class="guide-maps-grid">
+              <div class="guide-map-card">
+                <div class="guide-map-header">
+                  <span class="guide-map-icon">👔</span>
+                  <strong>Executive Boardroom</strong>
+                </div>
+                <p>Simulates high-pressure 1-on-1 technical and HR interview rounds with Senior Director Mr. Vikram Malhotra. Focus on the STAR methodology, composure telemetry, and architectural justification.</p>
+                <div class="guide-map-pill">Interviewer: Vikram Malhotra</div>
+              </div>
+              <div class="guide-map-card">
+                <div class="guide-map-header">
+                  <span class="guide-map-icon">🏢</span>
+                  <strong>Corporate Open Floor</strong>
+                </div>
+                <p>Simulates day-to-day engineering standups, sprint reviews, and colleague collaboration with Staff Architect Aditi Sharma. Use the Floor Radar to navigate and practice proactive communication.</p>
+                <div class="guide-map-pill">Colleague: Aditi Sharma</div>
+              </div>
+              <div class="guide-map-card">
+                <div class="guide-map-header">
+                  <span class="guide-map-icon">🪞</span>
+                  <strong>Candidate Styling Studio</strong>
+                </div>
+                <p>Interactive 360° grooming suite with 4 sculpted hairstyles, bespoke suits, tie bar, and footwear. Enforces the 4 Golden Rules of corporate attire for Tier-1 campus placement drives.</p>
+                <div class="guide-map-pill">Consultant: Priya Sen</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STAR Methodology Primer -->
+          <div class="guide-section">
+            <h3 class="guide-section-title">⭐ STAR Methodology Framework</h3>
+            <div class="guide-star-grid">
+              <div class="star-card s">
+                <div class="star-letter">S</div>
+                <strong>Situation</strong>
+                <span>Set the project context, technical scope, and real-world constraint.</span>
+              </div>
+              <div class="star-card t">
+                <div class="star-letter">T</div>
+                <strong>Task</strong>
+                <span>State your specific engineering responsibility and deliverable.</span>
+              </div>
+              <div class="star-card a">
+                <div class="star-letter">A</div>
+                <strong>Action</strong>
+                <span>Explain your systematic steps: debugging, code refactoring, architecture.</span>
+              </div>
+              <div class="star-card r">
+                <div class="star-letter">R</div>
+                <strong>Result</strong>
+                <span>Quantify the impact (e.g. 40% latency reduction, 8.4 GPA turnaround).</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls Reference -->
+          <div class="guide-section">
+            <h3 class="guide-section-title">🎮 Keyboard &amp; Mouse Controls</h3>
+            <div class="guide-keys-grid">
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span></div>
+                <span>Walk / Navigate across the office</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">Mouse Drag</span></div>
+                <span>Rotate camera 360° around candidate</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">C</span></div>
+                <span>Toggle Camera View (Cinematic / 3rd Person)</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">T</span></div>
+                <span>Open Character Studio Drawer</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span></div>
+                <span>Select Dialogue Options A, B, or C</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">L</span> / <span class="kbd">J</span></div>
+                <span>Toggle Ceiling &amp; Desk Lighting</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">H</span></div>
+                <span>Toggle this Placement Guide</span>
+              </div>
+              <div class="guide-key-item">
+                <div class="key-combo"><span class="kbd">Space</span></div>
+                <span>Advance to next interview round</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-modal-footer">
+          <button class="guide-gotit-btn" id="help-gotit-btn">Understood, Let's Practice! →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

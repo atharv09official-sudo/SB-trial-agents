@@ -1,0 +1,135 @@
+{
+  "interview_room": [
+    {
+      "id": "INT_001",
+      "scene": "interview_room",
+      "situation": "The lead interviewer looks up from your resume and asks: 'Tell me about a time you faced a difficult bug in your final-year project.'",
+      "choiceA": "I usually ask my batchmates or senior to fix hard bugs for me so I don't waste project time.",
+      "choiceB": "I isolate the module with unit tests, reproduce the error in debug mode, and systematically inspect the call stack before patching.",
+      "choiceC": "Bugs happen all the time, honestly I just rewrite the whole code block until it works.",
+      "scores": { "A": 3, "B": 9, "C": 4 },
+      "feedbacks": {
+        "A": "Shows lack of individual problem-solving ownership.",
+        "B": "Demonstrates structured engineering methodology and technical maturity.",
+        "C": "Trial-and-error without root cause analysis is seen as inefficient."
+      },
+      "tips": {
+        "A": "Highlight how you debug independently before asking for guidance.",
+        "B": "Maintain this STAR structure (Situation, Task, Action, Result) in your answers.",
+        "C": "Explain your systematic debugging steps rather than rewriting blindly."
+      },
+      "weak_tag": "technical_communication",
+      "next_scenario": "INT_002"
+    },
+    {
+      "id": "INT_002",
+      "scene": "interview_room",
+      "situation": "The interviewer remarks: 'Your academic score in 3rd semester dipped a bit. What happened there?'",
+      "choiceA": "The university professors were setting very unfair question papers that semester.",
+      "choiceB": "I was balancing a robotics competition and time management slipped, but I rebuilt my study schedule and brought my GPA back to 8.4.",
+      "choiceC": "I didn't really like the subjects in that semester, so I didn't study much.",
+      "scores": { "A": 2, "B": 9, "C": 3 },
+      "feedbacks": {
+        "A": "Blaming external factors leaves a very poor impression.",
+        "B": "Owns the mistake, shows resilience and a verified turnaround.",
+        "C": "Suggests low discipline when working on uninteresting assignments."
+      },
+      "tips": {
+        "A": "Never blame teachers or college; take accountability.",
+        "B": "Great job pivoting from a setback to a positive recovery story.",
+        "C": "Show willingness to deliver excellence even on tough or dry topics."
+      },
+      "weak_tag": "accountability",
+      "next_scenario": "INT_003"
+    },
+    {
+      "id": "INT_003",
+      "scene": "interview_room",
+      "situation": "Do you have any questions for us before we wrap up?",
+      "choiceA": "No sir, nothing from my side, I just want to know my package and salary.",
+      "choiceB": "Could you share what technologies the team is adopting this quarter and what mentorship a fresher receives?",
+      "choiceC": "When will I get the offer letter?",
+      "scores": { "A": 2, "B": 10, "C": 3 },
+      "feedbacks": {
+        "A": "Focusing solely on compensation at round 1 sounds transactional.",
+        "B": "Demonstrates genuine curiosity about team culture and growth.",
+        "C": "Presumptuous and skips learning about the actual role."
+      },
+      "tips": {
+        "A": "Save salary queries for HR round; ask role-specific questions here.",
+        "B": "Asking about team roadmap leaves a strong lasting impression.",
+        "C": "Inquire about onboarding and tech stack instead."
+      },
+      "weak_tag": "professional_curiosity",
+      "next_scenario": null
+    }
+  ],
+  "office_floor": [
+    {
+      "id": "OFF_001",
+      "scene": "office_floor",
+      "situation": "You notice your pull request has 12 review comments from a senior engineer pointing out naming convention flaws.",
+      "choiceA": "Reply 'looks fine to me' and merge the branch anyway.",
+      "choiceB": "Acknowledge the feedback, comment on each thread with your fixes, and ask for a 5-minute sync if any point is unclear.",
+      "choiceC": "Complain to the team lead that the senior engineer is nitpicking.",
+      "scores": { "A": 1, "B": 10, "C": 2 },
+      "feedbacks": {
+        "A": "Merging unapproved code breaks team trust and CI/CD policy.",
+        "B": "Professional, constructive, and respects code quality standards.",
+        "C": "Creates workplace friction over standard engineering guidelines."
+      },
+      "tips": {
+        "A": "Never bypass branch protection or peer reviews.",
+        "B": "Clear communication in PR comments saves hours of debugging.",
+        "C": "Treat code reviews as learning opportunities, not attacks."
+      },
+      "weak_tag": "collaboration",
+      "next_scenario": "OFF_002"
+    },
+    {
+      "id": "OFF_002",
+      "scene": "office_floor",
+      "situation": "You finish your assigned ticket 2 days ahead of the sprint deadline.",
+      "choiceA": "Browse social media quietly until sprint review.",
+      "choiceB": "Notify your scrum master, document your work, and offer to pick up a backlog bug or assist a teammate.",
+      "choiceC": "Leave office early without telling anyone.",
+      "scores": { "A": 3, "B": 10, "C": 1 },
+      "feedbacks": {
+        "A": "Demonstrates low initiative and disengagement.",
+        "B": "High initiative, teamwork, and proactive communication.",
+        "C": "Serious attendance violation on an internship or job."
+      },
+      "tips": {
+        "A": "Use extra sprint time to write tests or learn new tooling.",
+        "B": "Proactivity is the #1 trait leads look for in junior hires.",
+        "C": "Always communicate your status with your manager."
+      },
+      "weak_tag": "workplace_initiative",
+      "next_scenario": null
+    }
+  ],
+  "wardrobe": [
+    {
+      "id": "WAR_001",
+      "scene": "wardrobe",
+      "situation": "You are preparing for a virtual technical interview with an enterprise bank.",
+      "choiceA": "A wrinkle-free button-down shirt/formal kurta, neutral background, and proper lighting.",
+      "choiceB": "A bright hooded sweatshirt with loud graphics.",
+      "choiceC": "Formal shirt on top, pajama bottoms, sitting in a dimly lit bedroom with bed visible.",
+      "scores": { "A": 10, "B": 2, "C": 5 },
+      "feedbacks": {
+        "A": "Crisp professional appearance and camera framing.",
+        "B": "Too casual for a banking/finance enterprise culture.",
+        "C": "Messy background and poor lighting distract from your technical answers."
+      },
+      "tips": {
+        "A": "Solid colors and natural face lighting convey high professionalism.",
+        "B": "Research company culture beforehand; banking expects business formal.",
+        "C": "Clean your camera background and sit upright in proper attire."
+      },
+      "weak_tag": "visual_presence",
+      "next_scenario": null
+    }
+  ]
+}
+
